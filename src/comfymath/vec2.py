@@ -25,8 +25,8 @@ class Vec2UnaryOperator(ABC):
     RETURN_TYPES = ("VEC2",)
     FUNCTION = "op"
 
-    def op(self, a: Vec2) -> Vec2:
-        return _vec2_from_numpy(self.op_numpy(numpy.array(a)))
+    def op(self, a: Vec2) -> tuple[Vec2]:
+        return (_vec2_from_numpy(self.op_numpy(numpy.array(a))),)
 
     @abstractmethod
     def op_numpy(self, a: numpy.ndarray) -> numpy.ndarray:
@@ -49,8 +49,8 @@ class Vec2BinaryOperator(ABC):
     RETURN_TYPES = ("VEC2",)
     FUNCTION = "op"
 
-    def op(self, a: Vec2, b: Vec2) -> Vec2:
-        return _vec2_from_numpy(self.op_numpy(numpy.array(a), numpy.array(b)))
+    def op(self, a: Vec2, b: Vec2) -> tuple[Vec2]:
+        return (_vec2_from_numpy(self.op_numpy(numpy.array(a), numpy.array(b))),)
 
     @abstractmethod
     def op_numpy(self, a: numpy.ndarray, b: numpy.ndarray) -> numpy.ndarray:
@@ -65,14 +65,14 @@ class Vec2UnaryQuery(ABC):
     def INPUT_TYPES(cls) -> Mapping[str, Any]:
         return {"required": {"a": ("VEC2", {"default": VEC2_ZERO})}}
 
-    RETURN_TYPES = ("BOOL",)
+    RETURN_TYPES = ("INT",)
     FUNCTION = "op"
 
-    def op(self, a: Vec2) -> bool:
-        return self.op_numpy(numpy.array(a))
+    def op(self, a: Vec2) -> tuple[int]:
+        return (self.op_numpy(numpy.array(a)),)
 
     @abstractmethod
-    def op_numpy(self, a: numpy.ndarray) -> bool:
+    def op_numpy(self, a: numpy.ndarray) -> int:
         pass
 
 
@@ -89,14 +89,14 @@ class Vec2BinaryQuery(ABC):
             }
         }
 
-    RETURN_TYPES = ("BOOL",)
+    RETURN_TYPES = ("INT",)
     FUNCTION = "op"
 
-    def op(self, a: Vec2, b: Vec2) -> bool:
-        return self.op_numpy(numpy.array(a), numpy.array(b))
+    def op(self, a: Vec2, b: Vec2) -> tuple[int]:
+        return (self.op_numpy(numpy.array(a), numpy.array(b)),)
 
     @abstractmethod
-    def op_numpy(self, a: numpy.ndarray, b: numpy.ndarray) -> bool:
+    def op_numpy(self, a: numpy.ndarray, b: numpy.ndarray) -> int:
         pass
 
 
@@ -111,8 +111,8 @@ class Vec2ToScalarUnary(ABC):
     RETURN_TYPES = ("FLOAT",)
     FUNCTION = "op"
 
-    def op(self, a: Vec2) -> float:
-        return self.op_numpy(numpy.array(a))
+    def op(self, a: Vec2) -> tuple[float]:
+        return (self.op_numpy(numpy.array(a)),)
 
     @abstractmethod
     def op_numpy(self, a: numpy.ndarray) -> float:
@@ -135,8 +135,8 @@ class Vec2ToScalarBinary(ABC):
     RETURN_TYPES = ("FLOAT",)
     FUNCTION = "op"
 
-    def op(self, a: Vec2, b: Vec2) -> float:
-        return self.op_numpy(numpy.array(a), numpy.array(b))
+    def op(self, a: Vec2, b: Vec2) -> tuple[float]:
+        return (self.op_numpy(numpy.array(a), numpy.array(b)),)
 
     @abstractmethod
     def op_numpy(self, a: numpy.ndarray, b: numpy.ndarray) -> float:
@@ -159,8 +159,8 @@ class Vec2ScalarOperation(ABC):
     RETURN_TYPES = ("VEC2",)
     FUNCTION = "op"
 
-    def op(self, a: Vec2, b: float) -> Vec2:
-        return _vec2_from_numpy(self.op_numpy(numpy.array(a), b))
+    def op(self, a: Vec2, b: float) -> tuple[Vec2]:
+        return (_vec2_from_numpy(self.op_numpy(numpy.array(a), b)),)
 
     @abstractmethod
     def op_numpy(self, a: numpy.ndarray, b: float) -> numpy.ndarray:
@@ -196,15 +196,15 @@ class Vec2Cross(Vec2BinaryOperator):
 
 
 class Vec2Eq(Vec2BinaryQuery):
-    def op_numpy(self, a: numpy.ndarray, b: numpy.ndarray) -> bool:
-        return a == b
+    def op_numpy(self, a: numpy.ndarray, b: numpy.ndarray) -> int:
+        return int(a == b)
 
     CATEGORY = "math/vec2"
 
 
 class Vec2Ne(Vec2BinaryQuery):
-    def op_numpy(self, a: numpy.ndarray, b: numpy.ndarray) -> bool:
-        return a != b
+    def op_numpy(self, a: numpy.ndarray, b: numpy.ndarray) -> int:
+        return int(a != b)
 
     CATEGORY = "math/vec2"
 

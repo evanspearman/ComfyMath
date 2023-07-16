@@ -5,38 +5,6 @@ from .vec3 import Vec3, VEC3_ZERO
 from .vec4 import Vec4, VEC4_ZERO
 
 
-class BoolToInt:
-    def __init__(self):
-        pass
-
-    @classmethod
-    def INPUT_TYPES(cls) -> Mapping[str, Any]:
-        return {"required": {"a": ("BOOL", {"default": False})}}
-
-    RETURN_TYPES = ("INT",)
-    FUNCTION = "op"
-    CATEGORY = "math/conversion"
-
-    def op(self, a: bool) -> int:
-        return int(a)
-
-
-class IntToBool:
-    def __init__(self):
-        pass
-
-    @classmethod
-    def INPUT_TYPES(cls) -> Mapping[str, Any]:
-        return {"required": {"a": ("INT", {"default": 0})}}
-
-    RETURN_TYPES = ("BOOL",)
-    FUNCTION = "op"
-    CATEGORY = "math/conversion"
-
-    def op(self, a: int) -> bool:
-        return bool(a)
-
-
 class FloatToInt:
     def __init__(self):
         pass
@@ -49,8 +17,8 @@ class FloatToInt:
     FUNCTION = "op"
     CATEGORY = "math/conversion"
 
-    def op(self, a: float) -> int:
-        return int(a)
+    def op(self, a: float) -> tuple[int]:
+        return (int(a),)
 
 
 class IntToFloat:
@@ -65,8 +33,8 @@ class IntToFloat:
     FUNCTION = "op"
     CATEGORY = "math/conversion"
 
-    def op(self, a: int) -> float:
-        return float(a)
+    def op(self, a: int) -> tuple[float]:
+        return (float(a),)
 
 
 class ComposeVec2:
@@ -86,8 +54,8 @@ class ComposeVec2:
     FUNCTION = "op"
     CATEGORY = "math/conversion"
 
-    def op(self, x: float, y: float) -> Vec2:
-        return (x, y)
+    def op(self, x: float, y: float) -> tuple[Vec2]:
+        return ((x, y),)
 
 
 class BreakoutVec2:
@@ -124,8 +92,8 @@ class ComposeVec3:
     FUNCTION = "op"
     CATEGORY = "math/conversion"
 
-    def op(self, x: float, y: float, z: float) -> Vec3:
-        return (x, y, z)
+    def op(self, x: float, y: float, z: float) -> tuple[Vec3]:
+        return ((x, y, z),)
 
 
 class BreakoutVec3:
@@ -163,8 +131,8 @@ class ComposeVec4:
     FUNCTION = "op"
     CATEGORY = "math/conversion"
 
-    def op(self, x: float, y: float, z: float, w: float) -> Vec4:
-        return (x, y, z, w)
+    def op(self, x: float, y: float, z: float, w: float) -> tuple[Vec4]:
+        return ((x, y, z, w),)
 
 
 class BreakoutVec4:
@@ -184,8 +152,6 @@ class BreakoutVec4:
 
 
 NODE_CLASS_MAPPINGS = {
-    "BoolToInt": BoolToInt,
-    "IntToBool": IntToBool,
     "FloatToInt": FloatToInt,
     "IntToFloat": IntToFloat,
     "ComposeVec2": ComposeVec2,
