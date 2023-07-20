@@ -1,227 +1,151 @@
 import math
 
-from abc import ABC, abstractmethod
-from typing import Any, Mapping
+from dataclasses import dataclass
+from typing import Callable, TypeAlias
 
 
-class IntUnaryOperator(ABC):
-    def __init__(self):
-        pass
-
-    @classmethod
-    def INPUT_TYPES(cls) -> Mapping[str, Any]:
-        return {"required": {"a": ("INT", {"default": 0})}}
-
-    RETURN_TYPES = ("INT",)
-    FUNCTION = "op"
-
-    @abstractmethod
-    def op(self, a: int) -> tuple[int]:
-        pass
+@dataclass
+class IntUnaryOperation:
+    name: str
+    function: Callable[[int], int]
 
 
-class IntBinaryOperator(ABC):
-    def __init__(self):
-        pass
+@dataclass
+class IntUnaryCondition:
+    name: str
+    function: Callable[[int], bool]
 
-    @classmethod
-    def INPUT_TYPES(cls) -> Mapping[str, Any]:
-        return {
+
+@dataclass
+class IntBinaryOperation:
+    name: str
+    function: Callable[[int, int], int]
+
+
+@dataclass
+class IntBinaryCondition:
+    name: str
+    function: Callable[[int, int], bool]
+
+
+INT_UNARY_OPERATIONS = [
+    IntUnaryOperation("Abs", lambda a: abs(a)),
+    IntUnaryOperation("Neg", lambda a: -a),
+    IntUnaryOperation("Inc", lambda a: a + 1),
+    IntUnaryOperation("Dec", lambda a: a - 1),
+    IntUnaryOperation("Sqr", lambda a: a * a),
+    IntUnaryOperation("Cube", lambda a: a * a * a),
+    IntUnaryOperation("Not", lambda a: ~a),
+    IntUnaryOperation("Factorial", lambda a: math.factorial(a)),
+]
+
+INT_UNARY_CONDITIONS = [
+    IntUnaryCondition("IsZero", lambda a: a == 0),
+    IntUnaryCondition("IsNonZero", lambda a: a != 0),
+    IntUnaryCondition("IsPositive", lambda a: a > 0),
+    IntUnaryCondition("IsNegative", lambda a: a < 0),
+    IntUnaryCondition("IsEven", lambda a: a % 2 == 0),
+    IntUnaryCondition("IsOdd", lambda a: a % 2 == 1),
+]
+
+INT_BINARY_OPERATIONS = [
+    IntBinaryOperation("Add", lambda a, b: a + b),
+    IntBinaryOperation("Sub", lambda a, b: a - b),
+    IntBinaryOperation("Mul", lambda a, b: a * b),
+    IntBinaryOperation("Div", lambda a, b: a // b),
+    IntBinaryOperation("Mod", lambda a, b: a % b),
+    IntBinaryOperation("Pow", lambda a, b: a**b),
+    IntBinaryOperation("And", lambda a, b: a & b),
+    IntBinaryOperation("Nand", lambda a, b: ~a & b),
+    IntBinaryOperation("Or", lambda a, b: a | b),
+    IntBinaryOperation("Nor", lambda a, b: ~a & b),
+    IntBinaryOperation("Xor", lambda a, b: a ^ b),
+    IntBinaryOperation("Xnor", lambda a, b: ~a ^ b),
+    IntBinaryOperation("Shl", lambda a, b: a << b),
+    IntBinaryOperation("Shr", lambda a, b: a >> b),
+    IntBinaryOperation("Max", lambda a, b: max(a, b)),
+    IntBinaryOperation("Min", lambda a, b: min(a, b)),
+]
+
+INT_BINARY_CONDITIONS = [
+    IntBinaryCondition("Eq", lambda a, b: a == b),
+    IntBinaryCondition("Neq", lambda a, b: a != b),
+    IntBinaryCondition("Gt", lambda a, b: a > b),
+    IntBinaryCondition("Lt", lambda a, b: a < b),
+    IntBinaryCondition("Geq", lambda a, b: a >= b),
+    IntBinaryCondition("Leq", lambda a, b: a <= b),
+]
+
+
+def _get_int_unary_op_node_class(op: IntUnaryOperation) -> type:
+    name = f"Int{op.name}"
+    class_dict = {
+        "INPUT_TYPES": lambda: {"required": {"a": ("INT", {"default": 0})}},
+        "RETURN_TYPES": ("INT",),
+        "FUNCTION": "op",
+        "CATEGORY": "math/int",
+        "op": lambda a: op.function(a),
+    }
+    return type(name, (), class_dict)
+
+def _get_int_unary_cond_node_class(op: IntUnaryCondition) -> type:
+    name = f"Int{op.name}"
+    class_dict = {
+        "INPUT_TYPES": lambda: {"required": {"a": ("INT", {"default": 0})}},
+        "RETURN_TYPES": ("INT",),
+        "FUNCTION": "op",
+        "CATEGORY": "math/int",
+        "op": lambda a: int(op.function(a)),
+    }
+    return type(name, (), class_dict)
+
+
+def _get_int_binary_op_node_class(op: IntBinaryOperation) -> type:
+    name = f"Int{op.name}"
+    class_dict = {
+        "INPUT_TYPES": lambda: {
             "required": {"a": ("INT", {"default": 0}), "b": ("INT", {"default": 0})}
-        }
-
-    RETURN_TYPES = ("INT",)
-    FUNCTION = "op"
-
-    @abstractmethod
-    def op(self, a: int, b: int) -> tuple[int]:
-        pass
-
-
-class IntAdd(IntBinaryOperator):
-    def op(self, a: int, b: int) -> tuple[int]:
-        return (a + b,)
-
-    CATEGORY = "math/int"
-
-
-class IntSub(IntBinaryOperator):
-    def op(self, a: int, b: int) -> tuple[int]:
-        return (a - b,)
-
-    CATEGORY = "math/int"
-
-
-class IntMul(IntBinaryOperator):
-    def op(self, a: int, b: int) -> tuple[int]:
-        return (a * b,)
-
-    CATEGORY = "math/int"
-
-
-class IntDiv(IntBinaryOperator):
-    def op(self, a: int, b: int) -> tuple[int]:
-        return (a // b,)
-
-    CATEGORY = "math/int"
-
-
-class IntMod(IntBinaryOperator):
-    def op(self, a: int, b: int) -> tuple[int]:
-        return (a % b,)
-
-    CATEGORY = "math/int"
-
-
-class IntPow(IntBinaryOperator):
-    def op(self, a: int, b: int) -> tuple[int]:
-        return (a**b,)
-
-    CATEGORY = "math/int"
-
-
-class IntLt(IntBinaryOperator):
-    def op(self, a: int, b: int) -> tuple[int]:
-        return (int(a < b),)
-
-    CATEGORY = "math/int/compare"
-
-
-class IntGt(IntBinaryOperator):
-    def op(self, a: int, b: int) -> tuple[int]:
-        return (int(a > b),)
-
-    CATEGORY = "math/int/compare"
-
-
-class IntLe(IntBinaryOperator):
-    def op(self, a: int, b: int) -> tuple[int]:
-        return (int(a <= b),)
-
-    CATEGORY = "math/int/compare"
-
-
-class IntGe(IntBinaryOperator):
-    def op(self, a: int, b: int) -> tuple[int]:
-        return (int(a >= b),)
-
-    CATEGORY = "math/int/compare"
-
-
-class IntEq(IntBinaryOperator):
-    def op(self, a: int, b: int) -> tuple[int]:
-        return (int(a == b),)
-
-    CATEGORY = "math/int/compare"
-
-
-class IntNe(IntBinaryOperator):
-    def op(self, a: int, b: int) -> tuple[int]:
-        return (int(a != b),)
-
-    CATEGORY = "math/int/compare"
-
-
-class IntAnd(IntBinaryOperator):
-    def op(self, a: int, b: int) -> tuple[int]:
-        return (a & b,)
-
-    CATEGORY = "math/int/bitwise"
-
-
-class IntOr(IntBinaryOperator):
-    def op(self, a: int, b: int) -> tuple[int]:
-        return (a | b,)
-
-    CATEGORY = "math/int/bitwise"
-
-
-class IntXor(IntBinaryOperator):
-    def op(self, a: int, b: int) -> tuple[int]:
-        return (a ^ b,)
-
-    CATEGORY = "math/int/bitwise"
-
-
-class IntXnor(IntBinaryOperator):
-    def op(self, a: int, b: int) -> tuple[int]:
-        return (~(a ^ b),)
-
-    CATEGORY = "math/int/bitwise"
-
-
-class IntNand(IntBinaryOperator):
-    def op(self, a: int, b: int) -> tuple[int]:
-        return (~(a & b),)
-
-    CATEGORY = "math/int/bitwise"
-
-
-class IntNot(IntUnaryOperator):
-    def op(self, a: int) -> tuple[int]:
-        return (~a,)
-
-    CATEGORY = "math/int/bitwise"
-
-
-class IntNeg(IntUnaryOperator):
-    def op(self, a: int) -> tuple[int]:
-        return (-a,)
-
-    CATEGORY = "math/int"
-
-
-class IntInc(IntUnaryOperator):
-    def op(self, a: int) -> tuple[int]:
-        return (a + 1,)
-
-    CATEGORY = "math/int"
-
-
-class IntDec(IntUnaryOperator):
-    def op(self, a: int) -> tuple[int]:
-        return (a - 1,)
-
-    CATEGORY = "math/int"
-
-
-class IntAbs(IntUnaryOperator):
-    def op(self, a: int) -> tuple[int]:
-        return (abs(a),)
-
-    CATEGORY = "math/int"
-
-
-class IntFactorial(IntUnaryOperator):
-    def op(self, a: int) -> tuple[int]:
-        return (math.factorial(a),)
-
-    CATEGORY = "math/int"
-
+        },
+        "RETURN_TYPES": ("INT",),
+        "FUNCTION": "op",
+        "CATEGORY": "math/int",
+        "op": lambda a, b: op.function(a, b),
+    }
+    return type(name, (), class_dict)
+
+def _get_int_binary_cond_node_class(op: IntBinaryCondition) -> type:
+    name = f"Int{op.name}"
+    class_dict = {
+        "INPUT_TYPES": lambda: {
+            "required": {"a": ("INT", {"default": 0}), "b": ("INT", {"default": 0})}
+        },
+        "RETURN_TYPES": ("INT",),
+        "FUNCTION": "op",
+        "CATEGORY": "math/int",
+        "op": lambda a, b: int(op.function(a, b)),
+    }
+    return type(name, (), class_dict)
+
+
+FLOAT_UNARY_OPERATION_CLASS_MAPPINGS = {
+    f"Int{op.name}": _get_int_unary_op_node_class(op) for op in INT_UNARY_OPERATIONS
+}
+
+FLOAT_UNARY_CONDITION_CLASS_MAPPINGS = {
+    f"Int{op.name}": _get_int_unary_cond_node_class(op) for op in INT_UNARY_CONDITIONS
+}
+
+FLOAT_BINARY_OPERATION_CLASS_MAPPINGS = {
+    f"Int{op.name}": _get_int_binary_op_node_class(op) for op in INT_BINARY_OPERATIONS
+}
+
+FLOAT_BINARY_CONDITION_CLASS_MAPPINGS = {
+    f"Int{op.name}": _get_int_binary_cond_node_class(op) for op in INT_BINARY_CONDITIONS
+}
 
 NODE_CLASS_MAPPINGS = {
-    "IntAdd": IntAdd,
-    "IntSub": IntSub,
-    "IntMul": IntMul,
-    "IntDiv": IntDiv,
-    "IntMod": IntMod,
-    "IntPow": IntPow,
-    "IntLt": IntLt,
-    "IntGt": IntGt,
-    "IntLe": IntLe,
-    "IntGe": IntGe,
-    "IntEq": IntEq,
-    "IntNe": IntNe,
-    "IntAnd": IntAnd,
-    "IntOr": IntOr,
-    "IntXor": IntXor,
-    "IntXnor": IntXnor,
-    "IntNand": IntNand,
-    "IntNot": IntNot,
-    "IntNeg": IntNeg,
-    "IntInc": IntInc,
-    "IntInc": IntInc,
-    "IntDec": IntDec,
-    "IntAbs": IntAbs,
-    "IntFactorial": IntFactorial,
+    **FLOAT_UNARY_OPERATION_CLASS_MAPPINGS,
+    **FLOAT_UNARY_CONDITION_CLASS_MAPPINGS,
+    **FLOAT_BINARY_OPERATION_CLASS_MAPPINGS,
+    **FLOAT_BINARY_CONDITION_CLASS_MAPPINGS,
 }

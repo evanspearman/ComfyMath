@@ -1,440 +1,188 @@
 import math
 
-from abc import ABC, abstractmethod
-from typing import Any, Mapping
+from dataclasses import dataclass
+from typing import Callable
 
 
-class FloatUnaryOperator(ABC):
-    def __init__(self):
-        pass
-
-    @classmethod
-    def INPUT_TYPES(cls) -> Mapping[str, Any]:
-        return {"required": {"a": ("FLOAT", {"default": 0.0})}}
-
-    RETURN_TYPES = ("FLOAT",)
-    FUNCTION = "op"
-
-    @abstractmethod
-    def op(self, a: float) -> tuple[float]:
-        pass
+@dataclass
+class FloatUnaryOperation:
+    name: str
+    function: Callable[[float], float]
 
 
-class FloatBinaryOperator(ABC):
-    def __init__(self):
-        pass
+@dataclass
+class FloatUnaryCondition:
+    name: str
+    function: Callable[[float], bool]
 
-    @classmethod
-    def INPUT_TYPES(cls) -> Mapping[str, Any]:
-        return {
+
+@dataclass
+class FloatBinaryOperation:
+    name: str
+    function: Callable[[float, float], float]
+
+
+@dataclass
+class FloatBinaryCondition:
+    name: str
+    function: Callable[[float, float], bool]
+
+
+FLOAT_UNARY_OPERATIONS = [
+    FloatUnaryOperation("Neg", lambda a: -a),
+    FloatUnaryOperation("Inc", lambda a: a + 1),
+    FloatUnaryOperation("Dec", lambda a: a - 1),
+    FloatUnaryOperation("Abs", lambda a: abs(a)),
+    FloatUnaryOperation("Sqr", lambda a: a * a),
+    FloatUnaryOperation("Cube", lambda a: a * a * a),
+    FloatUnaryOperation("Sqrt", lambda a: math.sqrt(a)),
+    FloatUnaryOperation("Exp", lambda a: math.exp(a)),
+    FloatUnaryOperation("Ln", lambda a: math.log(a)),
+    FloatUnaryOperation("Log10", lambda a: math.log10(a)),
+    FloatUnaryOperation("Log2", lambda a: math.log2(a)),
+    FloatUnaryOperation("Sin", lambda a: math.sin(a)),
+    FloatUnaryOperation("Cos", lambda a: math.cos(a)),
+    FloatUnaryOperation("Tan", lambda a: math.tan(a)),
+    FloatUnaryOperation("Asin", lambda a: math.asin(a)),
+    FloatUnaryOperation("Acos", lambda a: math.acos(a)),
+    FloatUnaryOperation("Atan", lambda a: math.atan(a)),
+    FloatUnaryOperation("Sinh", lambda a: math.sinh(a)),
+    FloatUnaryOperation("Cosh", lambda a: math.cosh(a)),
+    FloatUnaryOperation("Tanh", lambda a: math.tanh(a)),
+    FloatUnaryOperation("Asinh", lambda a: math.asinh(a)),
+    FloatUnaryOperation("Acosh", lambda a: math.acosh(a)),
+    FloatUnaryOperation("Atanh", lambda a: math.atanh(a)),
+    FloatUnaryOperation("Round", lambda a: round(a)),
+    FloatUnaryOperation("Floor", lambda a: math.floor(a)),
+    FloatUnaryOperation("Ceil", lambda a: math.ceil(a)),
+    FloatUnaryOperation("Trunc", lambda a: math.trunc(a)),
+    FloatUnaryOperation("Erf", lambda a: math.erf(a)),
+    FloatUnaryOperation("Erfc", lambda a: math.erfc(a)),
+    FloatUnaryOperation("Gamma", lambda a: math.gamma(a)),
+    FloatUnaryOperation("Radians", lambda a: math.radians(a)),
+    FloatUnaryOperation("Degrees", lambda a: math.degrees(a)),
+]
+
+FLOAT_UNARY_CONDITIONS = [
+    FloatUnaryCondition("IsZero", lambda a: a == 0.0),
+    FloatUnaryCondition("IsPositive", lambda a: a > 0.0),
+    FloatUnaryCondition("IsNegative", lambda a: a < 0.0),
+    FloatUnaryCondition("IsNonZero", lambda a: a != 0.0),
+    FloatUnaryCondition("IsPositiveInfinity", lambda a: math.isinf(a) and a > 0.0),
+    FloatUnaryCondition("IsNegativeInfinity", lambda a: math.isinf(a) and a < 0.0),
+    FloatUnaryCondition("IsNaN", lambda a: math.isnan(a)),
+    FloatUnaryCondition("IsFinite", lambda a: math.isfinite(a)),
+    FloatUnaryCondition("IsInfinite", lambda a: math.isinf(a)),
+    FloatUnaryCondition("IsEven", lambda a: a % 2 == 0.0),
+    FloatUnaryCondition("IsOdd", lambda a: a % 2 != 0.0),
+]
+
+FLOAT_BINARY_OPERATIONS = [
+    FloatBinaryOperation("Add", lambda a, b: a + b),
+    FloatBinaryOperation("Sub", lambda a, b: a - b),
+    FloatBinaryOperation("Mul", lambda a, b: a * b),
+    FloatBinaryOperation("Div", lambda a, b: a / b),
+    FloatBinaryOperation("Mod", lambda a, b: a % b),
+    FloatBinaryOperation("Pow", lambda a, b: a**b),
+    FloatBinaryOperation("FloorDiv", lambda a, b: a // b),
+    FloatBinaryOperation("Max", lambda a, b: max(a, b)),
+    FloatBinaryOperation("Min", lambda a, b: min(a, b)),
+    FloatBinaryOperation("Log", lambda a, b: math.log(a, b)),
+    FloatBinaryOperation("Atan2", lambda a, b: math.atan2(a, b)),
+]
+
+FLOAT_BINARY_CONDITIONS = [
+    FloatBinaryCondition("Eq", lambda a, b: a == b),
+    FloatBinaryCondition("Neq", lambda a, b: a != b),
+    FloatBinaryCondition("Gt", lambda a, b: a > b),
+    FloatBinaryCondition("Gte", lambda a, b: a >= b),
+    FloatBinaryCondition("Lt", lambda a, b: a < b),
+    FloatBinaryCondition("Lte", lambda a, b: a <= b),
+]
+
+
+def _get_float_unary_op_node_class(op: FloatUnaryOperation) -> type:
+    name = f"Float{op.name}"
+    class_dict = {
+        "INPUT_TYPES": lambda: {"required": {"a": ("FLOAT", {"default": 0.0})}},
+        "RETURN_TYPES": ("FLOAT",),
+        "FUNCTION": "op",
+        "CATEGORY": "math/float",
+        "op": op.function,
+    }
+    return type(name, (), class_dict)
+
+
+def _get_float_unary_cond_node_class(op: FloatUnaryCondition) -> type:
+    name = f"Float{op.name}"
+    class_dict = {
+        "INPUT_TYPES": lambda: {"required": {"a": ("FLOAT", {"default": 0.0})}},
+        "RETURN_TYPES": ("INT",),
+        "FUNCTION": "op",
+        "CATEGORY": "math/float",
+        "op": lambda a: int(op.function(a)),
+    }
+    return type(name, (), class_dict)
+
+
+def _get_float_binary_op_node_class(op: FloatBinaryOperation) -> type:
+    name = f"Float{op.name}"
+    class_dict = {
+        "INPUT_TYPES": lambda: {
             "required": {
                 "a": ("FLOAT", {"default": 0.0}),
                 "b": ("FLOAT", {"default": 0.0}),
             }
-        }
-
-    RETURN_TYPES = ("FLOAT",)
-    FUNCTION = "op"
-
-    @abstractmethod
-    def op(self, a: float, b: float) -> tuple[float]:
-        pass
-
-
-class FloatUnaryQuery(ABC):
-    def __init__(self):
-        pass
-
-    @classmethod
-    def INPUT_TYPES(cls) -> Mapping[str, Any]:
-        return {"required": {"a": ("FLOAT", {"default": 0.0})}}
-
-    RETURN_TYPES = ("INT",)
-    FUNCTION = "op"
-
-    @abstractmethod
-    def op(self, a: float) -> tuple[int]:
-        pass
+        },
+        "RETURN_TYPES": ("FLOAT",),
+        "FUNCTION": "op",
+        "CATEGORY": "math/float",
+        "op": op.function,
+    }
+    return type(name, (), class_dict)
 
 
-class FloatBinaryQuery(ABC):
-    def __init__(self):
-        pass
-
-    @classmethod
-    def INPUT_TYPES(cls) -> Mapping[str, Any]:
-        return {
+def _get_float_binary_cond_node_class(op: FloatBinaryCondition) -> type:
+    name = f"Float{op.name}"
+    class_dict = {
+        "INPUT_TYPES": lambda: {
             "required": {
                 "a": ("FLOAT", {"default": 0.0}),
                 "b": ("FLOAT", {"default": 0.0}),
             }
-        }
-
-    RETURN_TYPES = ("INT",)
-    FUNCTION = "op"
-
-    @abstractmethod
-    def op(self, a: float, b: float) -> tuple[int]:
-        pass
-
-
-class FloatAdd(FloatBinaryOperator):
-    def op(self, a: float, b: float) -> tuple[float]:
-        return (a + b,)
-
-    CATEGORY = "math/float"
-
-
-class FloatSub(FloatBinaryOperator):
-    def op(self, a: float, b: float) -> tuple[float]:
-        return (a - b,)
-
-    CATEGORY = "math/float"
-
-
-class FloatMul(FloatBinaryOperator):
-    def op(self, a: float, b: float) -> tuple[float]:
-        return (a * b,)
-
-    CATEGORY = "math/float"
-
-
-class FloatDiv(FloatBinaryOperator):
-    def op(self, a: float, b: float) -> tuple[float]:
-        return (a / b,)
-
-    CATEGORY = "math/float"
-
-
-class FloatLt(FloatBinaryQuery):
-    def op(self, a: float, b: float) -> tuple[int]:
-        return (int(a < b),)
-
-    CATEGORY = "math/float/compare"
-
-
-class FloatGt(FloatBinaryQuery):
-    def op(self, a: float, b: float) -> tuple[int]:
-        return (int(a > b),)
-
-    CATEGORY = "math/float/compare"
-
-
-class FloatLe(FloatBinaryQuery):
-    def op(self, a: float, b: float) -> tuple[int]:
-        return (int(a <= b),)
-
-    CATEGORY = "math/float/compare"
-
-
-class FloatGe(FloatBinaryQuery):
-    def op(self, a: float, b: float) -> tuple[int]:
-        return (int(a >= b),)
-
-    CATEGORY = "math/float/compare"
-
-
-class FloatEq(FloatBinaryQuery):
-    def op(self, a: float, b: float) -> tuple[int]:
-        return (int(a == b),)
-
-    CATEGORY = "math/float/compare"
-
-
-class FloatNe(FloatBinaryQuery):
-    def op(self, a: float, b: float) -> tuple[int]:
-        return (int(a != b),)
-
-    CATEGORY = "math/float/compare"
-
-
-class FloatNeg(FloatUnaryOperator):
-    def op(self, a: float) -> tuple[float]:
-        return (-a,)
-
-    CATEGORY = "math/float"
-
-
-class FloatInc(FloatUnaryOperator):
-    def op(self, a: float) -> tuple[float]:
-        return (a + 1,)
-
-    CATEGORY = "math/float"
-
-
-class FloatDec(FloatUnaryOperator):
-    def op(self, a: float) -> tuple[float]:
-        return (a - 1,)
-
-    CATEGORY = "math/float"
-
-
-class FloatAbs(FloatUnaryOperator):
-    def op(self, a: float) -> tuple[float]:
-        return (math.fabs(a),)
-
-    CATEGORY = "math/float"
-
-
-class FloatSqrt(FloatUnaryOperator):
-    def op(self, a: float) -> tuple[float]:
-        return (a**0.5,)
-
-    CATEGORY = "math/float"
-
-
-class FloatPow(FloatBinaryOperator):
-    def op(self, a: float, b: float) -> tuple[float]:
-        return (a**b,)
-
-    CATEGORY = "math/float"
-
-
-class FloatLog(FloatBinaryOperator):
-    def op(self, a: float, b: float) -> tuple[float]:
-        return (math.log(a, b),)
-
-    CATEGORY = "math/float"
-
-
-class FloatCeil(FloatUnaryOperator):
-    def op(self, a: float) -> tuple[float]:
-        return (math.ceil(a),)
-
-    CATEGORY = "math/float"
-
-
-class FloatFloor(FloatUnaryOperator):
-    def op(self, a: float) -> tuple[float]:
-        return (math.floor(a),)
-
-    CATEGORY = "math/float"
-
-
-class FloatRound(FloatUnaryOperator):
-    def op(self, a: float) -> tuple[float]:
-        return (round(a),)
-
-    CATEGORY = "math/float"
-
-
-class FloatTrunc(FloatUnaryOperator):
-    def op(self, a: float) -> tuple[float]:
-        return (math.trunc(a),)
-
-    CATEGORY = "math/float"
-
-
-class FloatSin(FloatUnaryOperator):
-    def op(self, a: float) -> tuple[float]:
-        return (math.sin(a),)
-
-    CATEGORY = "math/float/trigonometry"
-
-
-class FloatCos(FloatUnaryOperator):
-    def op(self, a: float) -> tuple[float]:
-        return (math.cos(a),)
-
-    CATEGORY = "math/float/trigonometry"
-
-
-class FloatTan(FloatUnaryOperator):
-    def op(self, a: float) -> tuple[float]:
-        return (math.tan(a),)
-
-    CATEGORY = "math/float/trigonometry"
-
-
-class FloatAsin(FloatUnaryOperator):
-    def op(self, a: float) -> tuple[float]:
-        return (math.asin(a),)
-
-    CATEGORY = "math/float/trigonometry"
-
-
-class FloatAcos(FloatUnaryOperator):
-    def op(self, a: float) -> tuple[float]:
-        return (math.acos(a),)
-
-    CATEGORY = "math/float/trigonometry"
-
-
-class FloatAtan(FloatUnaryOperator):
-    def op(self, a: float) -> tuple[float]:
-        return (math.atan(a),)
-
-    CATEGORY = "math/float/trigonometry"
-
-
-class FloatAtan2(FloatBinaryOperator):
-    def op(self, a: float, b: float) -> tuple[float]:
-        return (math.atan2(a, b),)
-
-    CATEGORY = "math/float/trigonometry"
-
-
-class FloatLn(FloatUnaryOperator):
-    def op(self, a: float) -> tuple[float]:
-        return (math.log(a),)
-
-    CATEGORY = "math/float"
-
-
-class FloatLog10(FloatUnaryOperator):
-    def op(self, a: float) -> tuple[float]:
-        return (math.log10(a),)
-
-    CATEGORY = "math/float"
-
-
-class FloatLog2(FloatUnaryOperator):
-    def op(self, a: float) -> tuple[float]:
-        return (math.log2(a),)
-
-    CATEGORY = "math/float"
-
-
-class FloatSinh(FloatUnaryOperator):
-    def op(self, a: float) -> tuple[float]:
-        return (math.sinh(a),)
-
-    CATEGORY = "math/float/trigonometry"
-
-
-class FloatCosh(FloatUnaryOperator):
-    def op(self, a: float) -> tuple[float]:
-        return (math.cosh(a),)
-
-    CATEGORY = "math/float/trigonometry"
-
-
-class FloatTanh(FloatUnaryOperator):
-    def op(self, a: float) -> tuple[float]:
-        return (math.tanh(a),)
-
-    CATEGORY = "math/float/trigonometry"
-
-
-class FloatAsinh(FloatUnaryOperator):
-    def op(self, a: float) -> tuple[float]:
-        return (math.asinh(a),)
-
-    CATEGORY = "math/float/trigonometry"
-
-
-class FloatAcosh(FloatUnaryOperator):
-    def op(self, a: float) -> tuple[float]:
-        return (math.acosh(a),)
-
-    CATEGORY = "math/float/trigonometry"
-
-
-class FloatAtanh(FloatUnaryOperator):
-    def op(self, a: float) -> tuple[float]:
-        return (math.atanh(a),)
-
-    CATEGORY = "math/float/trigonometry"
-
-
-class FloatExp(FloatUnaryOperator):
-    def op(self, a: float) -> tuple[float]:
-        return (math.exp(a),)
-
-    CATEGORY = "math/float"
-
-
-class FloatExpm1(FloatUnaryOperator):
-    def op(self, a: float) -> tuple[float]:
-        return (math.expm1(a),)
-
-    CATEGORY = "math/float/functions"
-
-
-class FloatErf(FloatUnaryOperator):
-    def op(self, a: float) -> tuple[float]:
-        return (math.erf(a),)
-
-    CATEGORY = "math/float/functions"
-
-
-class FloatErfc(FloatUnaryOperator):
-    def op(self, a: float) -> tuple[float]:
-        return (math.erfc(a),)
-
-    CATEGORY = "math/float/functions"
-
-
-class FloatGamma(FloatUnaryOperator):
-    def op(self, a: float) -> tuple[float]:
-        return (math.gamma(a),)
-
-    CATEGORY = "math/float/functions"
-
-
-class FloatRadians(FloatUnaryOperator):
-    def op(self, a: float) -> tuple[float]:
-        return (math.radians(a),)
-
-    CATEGORY = "math/float/trigonometry"
-
-
-class FloatDegrees(FloatUnaryOperator):
-    def op(self, a: float) -> tuple[float]:
-        return (math.degrees(a),)
-
-    CATEGORY = "math/float/trigonometry"
-
+        },
+        "RETURN_TYPES": ("INT",),
+        "FUNCTION": "op",
+        "CATEGORY": "math/float",
+        "op": lambda a, b: int(op.function(a, b)),
+    }
+    return type(name, (), class_dict)
+
+
+FLOAT_UNARY_OPERATION_CLASS_MAPPINGS = {
+    f"Float{op.name}": _get_float_unary_op_node_class(op)
+    for op in FLOAT_UNARY_OPERATIONS
+}
+
+FLOAT_UNARY_CONDITION_CLASS_MAPPINGS = {
+    f"Float{op.name}": _get_float_unary_cond_node_class(op)
+    for op in FLOAT_UNARY_CONDITIONS
+}
+
+
+FLOAT_BINARY_OPERATION_CLASS_MAPPINGS = {
+    f"Float{op.name}": _get_float_binary_op_node_class(op)
+    for op in FLOAT_BINARY_OPERATIONS
+}
+
+FLOAT_BINARY_CONDITION_CLASS_MAPPINGS = {
+    f"Float{op.name}": _get_float_binary_cond_node_class(op)
+    for op in FLOAT_BINARY_CONDITIONS
+}
 
 NODE_CLASS_MAPPINGS = {
-    "FloatAdd": FloatAdd,
-    "FloatSub": FloatSub,
-    "FloatMul": FloatMul,
-    "FloatDiv": FloatDiv,
-    "FloatLt": FloatLt,
-    "FloatGt": FloatGt,
-    "FloatLe": FloatLe,
-    "FloatGe": FloatGe,
-    "FloatEq": FloatEq,
-    "FloatNe": FloatNe,
-    "FloatNeg": FloatNeg,
-    "FloatInc": FloatInc,
-    "FloatDec": FloatDec,
-    "FloatAbs": FloatAbs,
-    "FloatAbs": FloatAbs,
-    "FloatSqrt": FloatSqrt,
-    "FloatPow": FloatPow,
-    "FloatLog": FloatLog,
-    "FloatCeil": FloatCeil,
-    "FloatCeil": FloatCeil,
-    "FloatFloor": FloatFloor,
-    "FloatRound": FloatRound,
-    "FloatTrunc": FloatTrunc,
-    "FloatSin": FloatSin,
-    "FloatCos": FloatCos,
-    "FloatCos": FloatCos,
-    "FloatTan": FloatTan,
-    "FloatAsin": FloatAsin,
-    "FloatAcos": FloatAcos,
-    "FloatAtan": FloatAtan,
-    "FloatAtan2": FloatAtan2,
-    "FloatAtan2": FloatAtan2,
-    "FloatLn": FloatLn,
-    "FloatLog10": FloatLog10,
-    "FloatLog2": FloatLog2,
-    "FloatSinh": FloatSinh,
-    "FloatCosh": FloatCosh,
-    "FloatCosh": FloatCosh,
-    "FloatTanh": FloatTanh,
-    "FloatAsinh": FloatAsinh,
-    "FloatAcosh": FloatAcosh,
-    "FloatAtanh": FloatAtanh,
-    "FloatExp": FloatExp,
-    "FloatExpm1": FloatExpm1,
-    "FloatExpm1": FloatExpm1,
-    "FloatErf": FloatErf,
-    "FloatErfc": FloatErfc,
-    "FloatGamma": FloatGamma,
-    "FloatRadians": FloatRadians,
-    "FloatDegrees": FloatDegrees,
+    **FLOAT_UNARY_OPERATION_CLASS_MAPPINGS,
+    **FLOAT_UNARY_CONDITION_CLASS_MAPPINGS,
+    **FLOAT_BINARY_OPERATION_CLASS_MAPPINGS,
+    **FLOAT_BINARY_CONDITION_CLASS_MAPPINGS,
 }
