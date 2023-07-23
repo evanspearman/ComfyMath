@@ -1,151 +1,129 @@
 import math
 
-from dataclasses import dataclass
-from typing import Callable, TypeAlias
+from typing import Any, Callable, Mapping
+
+DEFAULT_INT = ("INT", {"default": 0})
+
+INT_UNARY_OPERATIONS: Mapping[str, Callable[[int], int]] = {
+    "Abs": lambda a: abs(a),
+    "Neg": lambda a: -a,
+    "Inc": lambda a: a + 1,
+    "Dec": lambda a: a - 1,
+    "Sqr": lambda a: a * a,
+    "Cube": lambda a: a * a * a,
+    "Not": lambda a: ~a,
+    "Factorial": lambda a: math.factorial(a),
+}
+
+INT_UNARY_CONDITIONS: Mapping[str, Callable[[int], bool]] = {
+    "IsZero": lambda a: a == 0,
+    "IsNonZero": lambda a: a != 0,
+    "IsPositive": lambda a: a > 0,
+    "IsNegative": lambda a: a < 0,
+    "IsEven": lambda a: a % 2 == 0,
+    "IsOdd": lambda a: a % 2 == 1,
+}
+
+INT_BINARY_OPERATIONS: Mapping[str, Callable[[int, int], int]] = {
+    "Add": lambda a, b: a + b,
+    "Sub": lambda a, b: a - b,
+    "Mul": lambda a, b: a * b,
+    "Div": lambda a, b: a // b,
+    "Mod": lambda a, b: a % b,
+    "Pow": lambda a, b: a**b,
+    "And": lambda a, b: a & b,
+    "Nand": lambda a, b: ~a & b,
+    "Or": lambda a, b: a | b,
+    "Nor": lambda a, b: ~a & b,
+    "Xor": lambda a, b: a ^ b,
+    "Xnor": lambda a, b: ~a ^ b,
+    "Shl": lambda a, b: a << b,
+    "Shr": lambda a, b: a >> b,
+    "Max": lambda a, b: max(a, b),
+    "Min": lambda a, b: min(a, b),
+}
+
+INT_BINARY_CONDITIONS: Mapping[str, Callable[[int, int], bool]] = {
+    "Eq": lambda a, b: a == b,
+    "Neq": lambda a, b: a != b,
+    "Gt": lambda a, b: a > b,
+    "Lt": lambda a, b: a < b,
+    "Geq": lambda a, b: a >= b,
+    "Leq": lambda a, b: a <= b,
+}
 
 
-@dataclass
 class IntUnaryOperation:
-    name: str
-    function: Callable[[int], int]
+    @classmethod
+    def INPUT_TYPES(cls) -> Mapping[str, Any]:
+        return {
+            "required": {"op": (list(INT_UNARY_OPERATIONS.keys()),), "a": DEFAULT_INT}
+        }
+
+    RETURN_TYPES = ("INT",)
+    FUNCTION = "op"
+    CATEGORY = "math/int"
+
+    def op(self, op: str, a: int) -> tuple[int]:
+        return (INT_UNARY_OPERATIONS[op](a),)
 
 
-@dataclass
 class IntUnaryCondition:
-    name: str
-    function: Callable[[int], bool]
+    @classmethod
+    def INPUT_TYPES(cls) -> Mapping[str, Any]:
+        return {
+            "required": {"op": (list(INT_UNARY_CONDITIONS.keys()),), "a": DEFAULT_INT}
+        }
+
+    RETURN_TYPES = ("BOOL",)
+    FUNCTION = "op"
+    CATEGORY = "math/int"
+
+    def op(self, op: str, a: int) -> tuple[bool]:
+        return (INT_UNARY_CONDITIONS[op](a),)
 
 
-@dataclass
 class IntBinaryOperation:
-    name: str
-    function: Callable[[int, int], int]
+    @classmethod
+    def INPUT_TYPES(cls) -> Mapping[str, Any]:
+        return {
+            "required": {
+                "op": (list(INT_BINARY_OPERATIONS.keys()),),
+                "a": DEFAULT_INT,
+                "b": DEFAULT_INT,
+            }
+        }
+
+    RETURN_TYPES = ("INT",)
+    FUNCTION = "op"
+    CATEGORY = "math/int"
+
+    def op(self, op: str, a: int, b: int) -> tuple[int]:
+        return (INT_BINARY_OPERATIONS[op](a, b),)
 
 
-@dataclass
 class IntBinaryCondition:
-    name: str
-    function: Callable[[int, int], bool]
+    @classmethod
+    def INPUT_TYPES(cls) -> Mapping[str, Any]:
+        return {
+            "required": {
+                "op": (list(INT_BINARY_CONDITIONS.keys()),),
+                "a": DEFAULT_INT,
+                "b": DEFAULT_INT,
+            }
+        }
 
+    RETURN_TYPES = ("BOOL",)
+    FUNCTION = "op"
+    CATEGORY = "math/int"
 
-INT_UNARY_OPERATIONS = [
-    IntUnaryOperation("Abs", lambda a: abs(a)),
-    IntUnaryOperation("Neg", lambda a: -a),
-    IntUnaryOperation("Inc", lambda a: a + 1),
-    IntUnaryOperation("Dec", lambda a: a - 1),
-    IntUnaryOperation("Sqr", lambda a: a * a),
-    IntUnaryOperation("Cube", lambda a: a * a * a),
-    IntUnaryOperation("Not", lambda a: ~a),
-    IntUnaryOperation("Factorial", lambda a: math.factorial(a)),
-]
+    def op(self, op: str, a: int, b: int) -> tuple[bool]:
+        return (INT_BINARY_CONDITIONS[op](a, b),)
 
-INT_UNARY_CONDITIONS = [
-    IntUnaryCondition("IsZero", lambda a: a == 0),
-    IntUnaryCondition("IsNonZero", lambda a: a != 0),
-    IntUnaryCondition("IsPositive", lambda a: a > 0),
-    IntUnaryCondition("IsNegative", lambda a: a < 0),
-    IntUnaryCondition("IsEven", lambda a: a % 2 == 0),
-    IntUnaryCondition("IsOdd", lambda a: a % 2 == 1),
-]
-
-INT_BINARY_OPERATIONS = [
-    IntBinaryOperation("Add", lambda a, b: a + b),
-    IntBinaryOperation("Sub", lambda a, b: a - b),
-    IntBinaryOperation("Mul", lambda a, b: a * b),
-    IntBinaryOperation("Div", lambda a, b: a // b),
-    IntBinaryOperation("Mod", lambda a, b: a % b),
-    IntBinaryOperation("Pow", lambda a, b: a**b),
-    IntBinaryOperation("And", lambda a, b: a & b),
-    IntBinaryOperation("Nand", lambda a, b: ~a & b),
-    IntBinaryOperation("Or", lambda a, b: a | b),
-    IntBinaryOperation("Nor", lambda a, b: ~a & b),
-    IntBinaryOperation("Xor", lambda a, b: a ^ b),
-    IntBinaryOperation("Xnor", lambda a, b: ~a ^ b),
-    IntBinaryOperation("Shl", lambda a, b: a << b),
-    IntBinaryOperation("Shr", lambda a, b: a >> b),
-    IntBinaryOperation("Max", lambda a, b: max(a, b)),
-    IntBinaryOperation("Min", lambda a, b: min(a, b)),
-]
-
-INT_BINARY_CONDITIONS = [
-    IntBinaryCondition("Eq", lambda a, b: a == b),
-    IntBinaryCondition("Neq", lambda a, b: a != b),
-    IntBinaryCondition("Gt", lambda a, b: a > b),
-    IntBinaryCondition("Lt", lambda a, b: a < b),
-    IntBinaryCondition("Geq", lambda a, b: a >= b),
-    IntBinaryCondition("Leq", lambda a, b: a <= b),
-]
-
-
-def _get_int_unary_op_node_class(op: IntUnaryOperation) -> type:
-    name = f"Int{op.name}"
-    class_dict = {
-        "INPUT_TYPES": lambda: {"required": {"a": ("INT", {"default": 0})}},
-        "RETURN_TYPES": ("INT",),
-        "FUNCTION": "op",
-        "CATEGORY": "math/int",
-        "op": lambda a: op.function(a),
-    }
-    return type(name, (), class_dict)
-
-def _get_int_unary_cond_node_class(op: IntUnaryCondition) -> type:
-    name = f"Int{op.name}"
-    class_dict = {
-        "INPUT_TYPES": lambda: {"required": {"a": ("INT", {"default": 0})}},
-        "RETURN_TYPES": ("INT",),
-        "FUNCTION": "op",
-        "CATEGORY": "math/int",
-        "op": lambda a: int(op.function(a)),
-    }
-    return type(name, (), class_dict)
-
-
-def _get_int_binary_op_node_class(op: IntBinaryOperation) -> type:
-    name = f"Int{op.name}"
-    class_dict = {
-        "INPUT_TYPES": lambda: {
-            "required": {"a": ("INT", {"default": 0}), "b": ("INT", {"default": 0})}
-        },
-        "RETURN_TYPES": ("INT",),
-        "FUNCTION": "op",
-        "CATEGORY": "math/int",
-        "op": lambda a, b: op.function(a, b),
-    }
-    return type(name, (), class_dict)
-
-def _get_int_binary_cond_node_class(op: IntBinaryCondition) -> type:
-    name = f"Int{op.name}"
-    class_dict = {
-        "INPUT_TYPES": lambda: {
-            "required": {"a": ("INT", {"default": 0}), "b": ("INT", {"default": 0})}
-        },
-        "RETURN_TYPES": ("INT",),
-        "FUNCTION": "op",
-        "CATEGORY": "math/int",
-        "op": lambda a, b: int(op.function(a, b)),
-    }
-    return type(name, (), class_dict)
-
-
-FLOAT_UNARY_OPERATION_CLASS_MAPPINGS = {
-    f"Int{op.name}": _get_int_unary_op_node_class(op) for op in INT_UNARY_OPERATIONS
-}
-
-FLOAT_UNARY_CONDITION_CLASS_MAPPINGS = {
-    f"Int{op.name}": _get_int_unary_cond_node_class(op) for op in INT_UNARY_CONDITIONS
-}
-
-FLOAT_BINARY_OPERATION_CLASS_MAPPINGS = {
-    f"Int{op.name}": _get_int_binary_op_node_class(op) for op in INT_BINARY_OPERATIONS
-}
-
-FLOAT_BINARY_CONDITION_CLASS_MAPPINGS = {
-    f"Int{op.name}": _get_int_binary_cond_node_class(op) for op in INT_BINARY_CONDITIONS
-}
 
 NODE_CLASS_MAPPINGS = {
-    **FLOAT_UNARY_OPERATION_CLASS_MAPPINGS,
-    **FLOAT_UNARY_CONDITION_CLASS_MAPPINGS,
-    **FLOAT_BINARY_OPERATION_CLASS_MAPPINGS,
-    **FLOAT_BINARY_CONDITION_CLASS_MAPPINGS,
+    "CM_IntUnaryOperation": IntUnaryOperation,
+    "CM_IntUnaryCondition": IntUnaryCondition,
+    "CM_IntBinaryOperation": IntBinaryOperation,
+    "CM_IntBinaryCondition": IntBinaryCondition,
 }

@@ -1,8 +1,6 @@
 from typing import Any, Mapping
 
-from .vec2 import Vec2, VEC2_ZERO
-from .vec3 import Vec3, VEC3_ZERO
-from .vec4 import Vec4, VEC4_ZERO
+from .vec import Vec2, VEC2_ZERO, Vec3, VEC3_ZERO, Vec4, VEC4_ZERO
 from .number import number
 
 
@@ -44,6 +42,7 @@ class IntToNumber:
     def op(self, a: int) -> tuple[number]:
         return (a,)
 
+
 class NumberToInt:
     @classmethod
     def INPUT_TYPES(cls) -> Mapping[str, Any]:
@@ -61,7 +60,7 @@ class FloatToNumber:
     @classmethod
     def INPUT_TYPES(cls) -> Mapping[str, Any]:
         return {"required": {"a": ("FLOAT", {"default": 0.0})}}
-    
+
     RETURN_TYPES = ("NUMBER",)
     FUNCTION = "op"
     CATEGORY = "math/conversion"
@@ -69,11 +68,12 @@ class FloatToNumber:
     def op(self, a: float) -> tuple[number]:
         return (a,)
 
+
 class NumberToFloat:
     @classmethod
     def INPUT_TYPES(cls) -> Mapping[str, Any]:
         return {"required": {"a": ("NUMBER", {"default": 0.0})}}
-    
+
     RETURN_TYPES = ("FLOAT",)
     FUNCTION = "op"
     CATEGORY = "math/conversion"
@@ -98,6 +98,23 @@ class ComposeVec2:
 
     def op(self, x: float, y: float) -> tuple[Vec2]:
         return ((x, y),)
+
+
+class FillVec2:
+    @classmethod
+    def INPUT_TYPES(cls) -> Mapping[str, Any]:
+        return {
+            "required": {
+                "a": ("FLOAT", {"default": 0.0}),
+            }
+        }
+
+    RETURN_TYPES = ("VEC2",)
+    FUNCTION = "op"
+    CATEGORY = "math/conversion"
+
+    def op(self, a: float) -> tuple[Vec2]:
+        return ((a, a),)
 
 
 class BreakoutVec2:
@@ -130,6 +147,23 @@ class ComposeVec3:
 
     def op(self, x: float, y: float, z: float) -> tuple[Vec3]:
         return ((x, y, z),)
+
+
+class FillVec3:
+    @classmethod
+    def INPUT_TYPES(cls) -> Mapping[str, Any]:
+        return {
+            "required": {
+                "a": ("FLOAT", {"default": 0.0}),
+            }
+        }
+
+    RETURN_TYPES = ("VEC3",)
+    FUNCTION = "op"
+    CATEGORY = "math/conversion"
+
+    def op(self, a: float) -> tuple[Vec3]:
+        return ((a, a, a),)
 
 
 class BreakoutVec3:
@@ -165,6 +199,23 @@ class ComposeVec4:
         return ((x, y, z, w),)
 
 
+class FillVec4:
+    @classmethod
+    def INPUT_TYPES(cls) -> Mapping[str, Any]:
+        return {
+            "required": {
+                "a": ("FLOAT", {"default": 0.0}),
+            }
+        }
+
+    RETURN_TYPES = ("VEC4",)
+    FUNCTION = "op"
+    CATEGORY = "math/conversion"
+
+    def op(self, a: float) -> tuple[Vec4]:
+        return ((a, a, a, a),)
+
+
 class BreakoutVec4:
     @classmethod
     def INPUT_TYPES(cls) -> Mapping[str, Any]:
@@ -179,16 +230,16 @@ class BreakoutVec4:
 
 
 NODE_CLASS_MAPPINGS = {
-    "FloatToInt": FloatToInt,
-    "IntToFloat": IntToFloat,
-    "IntToNumber": IntToNumber,
-    "NumberToInt": NumberToInt,
-    "FloatToNumber": FloatToNumber,
-    "NumberToFloat": NumberToFloat,
-    "ComposeVec2": ComposeVec2,
-    "ComposeVec3": ComposeVec3,
-    "ComposeVec4": ComposeVec4,
-    "BreakoutVec2": BreakoutVec2,
-    "BreakoutVec3": BreakoutVec3,
-    "BreakoutVec4": BreakoutVec4,
+    "CM_FloatToInt": FloatToInt,
+    "CM_IntToFloat": IntToFloat,
+    "CM_IntToNumber": IntToNumber,
+    "CM_NumberToInt": NumberToInt,
+    "CM_FloatToNumber": FloatToNumber,
+    "CM_NumberToFloat": NumberToFloat,
+    "CM_ComposeVec2": ComposeVec2,
+    "CM_ComposeVec3": ComposeVec3,
+    "CM_ComposeVec4": ComposeVec4,
+    "CM_BreakoutVec2": BreakoutVec2,
+    "CM_BreakoutVec3": BreakoutVec3,
+    "CM_BreakoutVec4": BreakoutVec4,
 }
