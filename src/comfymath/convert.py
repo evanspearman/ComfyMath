@@ -4,6 +4,32 @@ from .vec import Vec2, VEC2_ZERO, Vec3, VEC3_ZERO, Vec4, VEC4_ZERO
 from .number import number
 
 
+class BoolToInt:
+    @classmethod
+    def INPUT_TYPES(cls) -> Mapping[str, Any]:
+        return {"required": {"a": ("BOOL", {"default": False})}}
+
+    RETURN_TYPES = ("INT",)
+    FUNCTION = "op"
+    CATEGORY = "math/conversion"
+
+    def op(self, a: bool) -> tuple[int]:
+        return (int(a),)
+
+
+class IntToBool:
+    @classmethod
+    def INPUT_TYPES(cls) -> Mapping[str, Any]:
+        return {"required": {"a": ("INT", {"default": 0})}}
+
+    RETURN_TYPES = ("BOOL",)
+    FUNCTION = "op"
+    CATEGORY = "math/conversion"
+
+    def op(self, a: int) -> tuple[bool]:
+        return (a != 0,)
+
+
 class FloatToInt:
     @classmethod
     def INPUT_TYPES(cls) -> Mapping[str, Any]:
@@ -230,6 +256,8 @@ class BreakoutVec4:
 
 
 NODE_CLASS_MAPPINGS = {
+    "CM_BoolToInt": BoolToInt,
+    "CM_IntToBool": IntToBool,
     "CM_FloatToInt": FloatToInt,
     "CM_IntToFloat": IntToFloat,
     "CM_IntToNumber": IntToNumber,
