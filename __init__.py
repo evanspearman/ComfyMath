@@ -5,6 +5,9 @@ from .src.comfymath.float import NODE_CLASS_MAPPINGS as float_NCM
 from .src.comfymath.number import NODE_CLASS_MAPPINGS as number_NCM
 from .src.comfymath.vec import NODE_CLASS_MAPPINGS as vec_NCM
 from .src.comfymath.control import NODE_CLASS_MAPPINGS as control_NCM
+from .src.comfymath.graphics import NODE_CLASS_MAPPINGS as graphics_NCM
+
+
 
 
 NODE_CLASS_MAPPINGS = {
@@ -15,6 +18,7 @@ NODE_CLASS_MAPPINGS = {
     **number_NCM,
     **vec_NCM,
     **control_NCM,
+    **graphics_NCM,
 }
 
 
