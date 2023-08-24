@@ -1,1 +1,4 @@
 numpy
+qdrant-client
+tqdm
+click

@@ -1,5 +1,7 @@
 from typing import Any, Mapping
 
+from torch import Tensor
+
 
 SDXL_SUPPORTED_RESOLUTIONS = [
     (1024, 1024, 1.0),
@@ -45,7 +47,7 @@ class NearestSDXLResolution:
     FUNCTION = "op"
     CATEGORY = "math/graphics"
 
-    def op(self, image) -> tuple[int, int]:
+    def op(self, image: Tensor) -> tuple[int, int]:
         image_width = image.size()[2]
         image_height = image.size()[1]
         print(f"Input image resolution: {image_width}x{image_height}")
