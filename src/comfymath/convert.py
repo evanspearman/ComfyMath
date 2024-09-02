@@ -1,7 +1,7 @@
 from typing import Any, Mapping
 
-from .vec import Vec2, VEC2_ZERO, Vec3, VEC3_ZERO, Vec4, VEC4_ZERO
-from .number import number
+from .vec import VEC2_ZERO, VEC3_ZERO, VEC4_ZERO
+from .types import Number, Vec2, Vec3, Vec4
 
 
 class BoolToInt:
@@ -65,7 +65,7 @@ class IntToNumber:
     FUNCTION = "op"
     CATEGORY = "math/conversion"
 
-    def op(self, a: int) -> tuple[number]:
+    def op(self, a: int) -> tuple[Number]:
         return (a,)
 
 
@@ -78,7 +78,7 @@ class NumberToInt:
     FUNCTION = "op"
     CATEGORY = "math/conversion"
 
-    def op(self, a: number) -> tuple[int]:
+    def op(self, a: Number) -> tuple[int]:
         return (int(a),)
 
 
@@ -91,7 +91,7 @@ class FloatToNumber:
     FUNCTION = "op"
     CATEGORY = "math/conversion"
 
-    def op(self, a: float) -> tuple[number]:
+    def op(self, a: float) -> tuple[Number]:
         return (a,)
 
 
@@ -104,7 +104,7 @@ class NumberToFloat:
     FUNCTION = "op"
     CATEGORY = "math/conversion"
 
-    def op(self, a: number) -> tuple[float]:
+    def op(self, a: Number) -> tuple[float]:
         return (float(a),)
 
 

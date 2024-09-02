@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Callable, Mapping, TypeAlias
+from typing import Any, Callable, Mapping
 
 from .float import (
     FLOAT_UNARY_OPERATIONS,
@@ -7,10 +7,9 @@ from .float import (
     FLOAT_BINARY_OPERATIONS,
     FLOAT_BINARY_CONDITIONS,
 )
+from .types import Number
 
 DEFAULT_NUMBER = ("NUMBER", {"default": 0.0})
-
-number: TypeAlias = int | float
 
 
 class NumberUnaryOperation:
@@ -27,7 +26,7 @@ class NumberUnaryOperation:
     FUNCTION = "op"
     CATEGORY = "math/number"
 
-    def op(self, op: str, a: number) -> tuple[float]:
+    def op(self, op: str, a: Number) -> tuple[float]:
         return (FLOAT_UNARY_OPERATIONS[op](float(a)),)
 
 
@@ -43,9 +42,9 @@ class NumberUnaryCondition:
 
     RETURN_TYPES = ("BOOL",)
     FUNCTION = "op"
-    CATEGORY = "math/number"
+    CATEGORY = "math/Number"
 
-    def op(self, op: str, a: number) -> tuple[bool]:
+    def op(self, op: str, a: Number) -> tuple[bool]:
         return (FLOAT_UNARY_CONDITIONS[op](float(a)),)
 
 
@@ -64,7 +63,7 @@ class NumberBinaryOperation:
     FUNCTION = "op"
     CATEGORY = "math/number"
 
-    def op(self, op: str, a: number, b: number) -> tuple[float]:
+    def op(self, op: str, a: Number, b: Number) -> tuple[float]:
         return (FLOAT_BINARY_OPERATIONS[op](float(a), float(b)),)
 
 
@@ -83,7 +82,7 @@ class NumberBinaryCondition:
     FUNCTION = "op"
     CATEGORY = "math/float"
 
-    def op(self, op: str, a: number, b: number) -> tuple[bool]:
+    def op(self, op: str, a: Number, b: Number) -> tuple[bool]:
         return (FLOAT_BINARY_CONDITIONS[op](float(a), float(b)),)
 
 

@@ -1,16 +1,15 @@
 import numpy
 
-from typing import Any, Callable, Mapping, TypeAlias
+from typing import Any, Callable, Mapping
 
-Vec2: TypeAlias = tuple[float, float]
+from .types import Vec2, Vec3, Vec4
+
 VEC2_ZERO = (0.0, 0.0)
 DEFAULT_VEC2 = ("VEC2", {"default": VEC2_ZERO})
 
-Vec3: TypeAlias = tuple[float, float, float]
 VEC3_ZERO = (0.0, 0.0, 0.0)
 DEFAULT_VEC3 = ("VEC3", {"default": VEC3_ZERO})
 
-Vec4: TypeAlias = tuple[float, float, float, float]
 VEC4_ZERO = (0.0, 0.0, 0.0, 0.0)
 DEFAULT_VEC4 = ("VEC4", {"default": VEC4_ZERO})
 
