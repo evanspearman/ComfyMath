@@ -8,8 +8,6 @@ from .src.comfymath.control import NODE_CLASS_MAPPINGS as control_NCM
 from .src.comfymath.graphics import NODE_CLASS_MAPPINGS as graphics_NCM
 
 
-
-
 NODE_CLASS_MAPPINGS = {
     **convert_NCM,
     **bool_NCM,

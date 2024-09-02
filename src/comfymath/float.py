@@ -2,7 +2,7 @@ import math
 
 from typing import Any, Callable, Mapping
 
-DEFAULT_FLOAT = ("FLOAT", {"default": 0.0})
+DEFAULT_FLOAT = ("FLOAT", {"default": 0.0, "step": 0.001, "round": False})
 
 FLOAT_UNARY_OPERATIONS: Mapping[str, Callable[[float], float]] = {
     "Neg": lambda a: -a,

@@ -33,7 +33,7 @@ class IntToBool:
 class FloatToInt:
     @classmethod
     def INPUT_TYPES(cls) -> Mapping[str, Any]:
-        return {"required": {"a": ("FLOAT", {"default": 0.0})}}
+        return {"required": {"a": ("FLOAT", {"default": 0.0, "round": False})}}
 
     RETURN_TYPES = ("INT",)
     FUNCTION = "op"
@@ -85,7 +85,7 @@ class NumberToInt:
 class FloatToNumber:
     @classmethod
     def INPUT_TYPES(cls) -> Mapping[str, Any]:
-        return {"required": {"a": ("FLOAT", {"default": 0.0})}}
+        return {"required": {"a": ("FLOAT", {"default": 0.0, "round": False})}}
 
     RETURN_TYPES = ("NUMBER",)
     FUNCTION = "op"
@@ -113,8 +113,8 @@ class ComposeVec2:
     def INPUT_TYPES(cls) -> Mapping[str, Any]:
         return {
             "required": {
-                "x": ("FLOAT", {"default": 0.0}),
-                "y": ("FLOAT", {"default": 0.0}),
+                "x": ("FLOAT", {"default": 0.0, "round": False}),
+                "y": ("FLOAT", {"default": 0.0, "round": False}),
             }
         }
 
@@ -131,7 +131,7 @@ class FillVec2:
     def INPUT_TYPES(cls) -> Mapping[str, Any]:
         return {
             "required": {
-                "a": ("FLOAT", {"default": 0.0}),
+                "a": ("FLOAT", {"default": 0.0, "round": False}),
             }
         }
 
