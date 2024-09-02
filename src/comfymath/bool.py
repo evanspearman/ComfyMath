@@ -1,6 +1,6 @@
 from typing import Any, Callable, Mapping
 
-DEFAULT_BOOL = ("BOOL", {"default": False})
+DEFAULT_BOOL = ("BOOLEAN", {"default": False})
 
 
 BOOL_UNARY_OPERATIONS: Mapping[str, Callable[[bool], bool]] = {
@@ -26,7 +26,7 @@ class BoolUnaryOperation:
             "required": {"op": (list(BOOL_UNARY_OPERATIONS.keys()),), "a": DEFAULT_BOOL}
         }
 
-    RETURN_TYPES = ("BOOL",)
+    RETURN_TYPES = ("BOOLEAN",)
     FUNCTION = "op"
     CATEGORY = "math/bool"
 
@@ -45,7 +45,7 @@ class BoolBinaryOperation:
             }
         }
 
-    RETURN_TYPES = ("BOOL",)
+    RETURN_TYPES = ("BOOLEAN",)
     FUNCTION = "op"
     CATEGORY = "math/bool"
 

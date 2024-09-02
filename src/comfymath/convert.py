@@ -7,7 +7,7 @@ from .number import number
 class BoolToInt:
     @classmethod
     def INPUT_TYPES(cls) -> Mapping[str, Any]:
-        return {"required": {"a": ("BOOL", {"default": False})}}
+        return {"required": {"a": ("BOOLEAN", {"default": False})}}
 
     RETURN_TYPES = ("INT",)
     FUNCTION = "op"
@@ -22,7 +22,7 @@ class IntToBool:
     def INPUT_TYPES(cls) -> Mapping[str, Any]:
         return {"required": {"a": ("INT", {"default": 0})}}
 
-    RETURN_TYPES = ("BOOL",)
+    RETURN_TYPES = ("BOOLEAN",)
     FUNCTION = "op"
     CATEGORY = "math/conversion"
 

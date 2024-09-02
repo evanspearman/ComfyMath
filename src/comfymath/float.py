@@ -105,7 +105,7 @@ class FloatUnaryCondition:
             }
         }
 
-    RETURN_TYPES = ("BOOL",)
+    RETURN_TYPES = ("BOOLEAN",)
     FUNCTION = "op"
     CATEGORY = "math/float"
 
@@ -143,7 +143,7 @@ class FloatBinaryCondition:
             }
         }
 
-    RETURN_TYPES = ("BOOL",)
+    RETURN_TYPES = ("BOOLEAN",)
     FUNCTION = "op"
     CATEGORY = "math/float"
 
