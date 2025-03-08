@@ -3,7 +3,7 @@ name = "comfymath"
 version = "0.1.0"
 description = "Math nodes for ComfyUI"
 authors = ["Evan Spearman <evan@spearman.mb.ca>"]
-license = "Apache-2.0"
+license = { text = "Apache License 2.0" }
 readme = "README.md"
 
 [tool.poetry.dependencies]
